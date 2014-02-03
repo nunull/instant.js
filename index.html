@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>instant.js</title>
+		<link rel="stylesheet" type="text/css" href="css/main.css">
+	</head>
+	<body>
+		<div class="test"></div>
+
+		<script type="text/template" class="template.test">
+			{{#observe items}}
+				<input type="text" value="{{title}}"><br>
+			{{/observe}}
+		</script>
+
+		<script type="text/javascript" src="libs/jquery.min.js"></script>
+		<script type="text/javascript" src="libs/handlebars.js"></script>
+		<script type="text/javascript" src="instant.js"></script>
+		<script type="text/javascript">	
+			var model = {
+				items: []
+			};
+
+			instant.controller.init(model);
+			instant.controller.render();
+			instant.actions.init({
+				add: {
+					handler: function(index) {
+						model.items.push({
+							title: new Date()
+						});
+						instant.controller.render();
+					},
+					key: 13
+				},
+			});
+		</script>
+	</body>
+</html>
