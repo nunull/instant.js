@@ -3,7 +3,7 @@
  * 
  * Licence: MIT
  * Author:  Timm Albers (http://timmalbers.de)
- * Version: 0.1.0
+ * Version: 0.0.0
  */
 
 // TODO test
