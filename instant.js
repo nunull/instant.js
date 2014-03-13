@@ -3,7 +3,7 @@
  * 
  * Licence: MIT
  * Author:  Timm Albers (http://timmalbers.de)
- * Version: 1.0.0
+ * Version: 1.0.1
  */
 var instant = (function() {
 	var model = {};
