@@ -5,35 +5,34 @@
 		<link rel="stylesheet" type="text/css" href="css/main.css">
 	</head>
 	<body>
-		<div class="test"></div>
+		<div data-view="test"></div>
 
-		<script type="text/template" class="template.test">
-			{{#observe items}}
-				<input type="text" value="{{title}}"><br>
-			{{/observe}}
+		<script type="text/template" data-view="test">
+			<h1>{{title}}</h1>
+			<span><b>{{description}}</b></span>
+			<ul>
+			{{#each tags}}
+				<li>{{name}}</li>
+			{{/each}}
+			</ul>
 		</script>
 
 		<script type="text/javascript" src="libs/jquery.min.js"></script>
 		<script type="text/javascript" src="libs/handlebars.js"></script>
 		<script type="text/javascript" src="instant.js"></script>
 		<script type="text/javascript">	
-			var model = {
-				items: []
+			var test = {
+				title: 'instant.js',
+				description: 'A client-side MVC-framework using handlebars.js and jQuery. Keeps your data and the DOM in sync.',
+				tags: [{
+					name: 'mvc'
+				}, {
+					name: 'client-side'
+				}]
 			};
-
-			instant.controller.init(model);
-			instant.controller.render();
-			instant.actions.init({
-				add: {
-					handler: function(index) {
-						model.items.push({
-							title: new Date()
-						});
-						instant.controller.render();
-					},
-					key: 13
-				},
-			});
+			instant.model(test);
+			
+			test.tags[0].name = 'MVC';
 		</script>
 	</body>
 </html>
