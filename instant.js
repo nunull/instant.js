@@ -3,7 +3,7 @@
  * 
  * Licence: MIT
  * Author:  Timm Albers (http://timmalbers.de)
- * Version: 1.0.2
+ * Version: 1.0.3
  */
 const instant = (function() {
 	var model = {};
@@ -20,11 +20,11 @@ const instant = (function() {
 	};
 
 	/*
-	 *Inititalize Handlebars.
+	 * Inititalize Handlebars.
 	 */
 	(function() {
-		Handlebars.registerHelper('', function(options) {
-			alert('tejkl');
+		Handlebars.registerHelper('blank', function(context, options) {
+			return context;
 		});
 	})();
 
