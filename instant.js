@@ -5,7 +5,7 @@
  * Author:  Timm Albers (http://timmalbers.de)
  * Version: 1.0.1
  */
-var instant = (function() {
+const instant = (function() {
 	var model = {};
 	var views = [];
 	var config = {
@@ -16,6 +16,12 @@ var instant = (function() {
 			return template(model);
 		}
 	};
+
+	(function() {
+		Handlebars.registerHelper('', function(options) {
+			alert('tejkl');
+		});
+	})();
 
 	/*
 	 * Attaches a property change listener recursivly to the given object.
@@ -47,6 +53,41 @@ var instant = (function() {
 		}
 	};
 
+	var insertInstantTags = function(source) {
+		var path = [];
+		var blockIndex;
+
+		source = source.replace(/{{.[^}}]*}}/g, function(match) {
+			var isBlock = false;
+			path.push(match.replace('{{', '').replace('}}', ''));
+
+			if(match.indexOf('{{#') === 0) {
+				isBlock = true;
+				var parts = match.split(' ');
+				var blockName;
+				if(parts.length > 1) blockName = (parts[1]).replace('}}', '');
+				else blockName = match.replace('{{#', '').replace('}}', '');
+
+				path.pop();
+				path.push(blockName);
+
+				match = '<div data-instant-property="' + path.join('.') + '">' + match;
+			} else if(match.indexOf('{{/') === 0) {
+				isBlock = true;
+				path.pop();
+
+				match = match + '</div>';
+			} else {
+				match = '<div data-instant-property="' + path.join('.') + '">' + match + '</div>';
+				path.pop();
+			}
+
+			return match;
+		});
+
+		return source;
+	};
+
 	/*
 	 * Parse the DOM, search for views and initialize those.
 	 */
@@ -56,7 +97,7 @@ var instant = (function() {
 		$('script[type="text/template"]').each(function() {
 			views.push({
 				name: $(this).attr('data-view'),
-				template: config.compile($(this).html())
+				template: config.compile(insertInstantTags($(this).html()))
 			});
 		});
 	};
@@ -85,7 +126,7 @@ var instant = (function() {
 			updateViews();
 			render();
 
-			// Return instant for method chaning.
+			// Return instant for method chaining.
 			return instant;
 		},
 
