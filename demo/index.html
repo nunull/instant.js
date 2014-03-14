@@ -7,11 +7,11 @@
 		<div data-view="test"></div>
 
 		<script type="text/template" data-view="test">
-			<h1>{{title}}</h1>
+			<h1 contenteditable="true">{{title}}</h1>
 			<span><b>{{description}}</b></span>
 			<ul>
 			{{#each tags}}
-				<li>{{name}}</li>
+				<li contenteditable="true">{{name}}</li>
 			{{/each}}
 			</ul>
 		</script>

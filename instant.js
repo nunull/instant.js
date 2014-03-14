@@ -8,6 +8,7 @@
 const instant = (function() {
 	var model = {};
 	var views = [];
+	var suppressRendering = false;
 	var config = {
 		compile: function(source) {
 			return Handlebars.compile(source)
@@ -17,9 +18,40 @@ const instant = (function() {
 		}
 	};
 
+	// Inititalize Handlebars.
 	(function() {
 		Handlebars.registerHelper('', function(options) {
 			alert('tejkl');
+		});
+	})();
+
+	// Initialize action listeners.
+	(function() {
+		$('body').keyup(function(e) {
+			var propertyIndex = 0;
+
+			$('[data-instant-property]').each(function() {
+				var propertyName = $(this).attr('data-instant-property');
+				var path = propertyName.split('.');
+
+				if($('[data-instant-property="' + propertyName + '"]').length > 1) {
+					var tmp = path.pop();
+					path.push(propertyIndex++);
+					path.push(tmp);
+				}
+				else propertyIndex = 0;
+
+				var value = model;
+				for(var i in path) {
+					if(path.length-1 == i) {
+						if(value[path[i]] !== $(this).html()) value[path[i]] = $(this).html();
+					} else {
+						value = value[path[i]];
+					}
+				}
+			});
+
+			suppressRendering = true;
 		});
 	})();
 
@@ -71,12 +103,12 @@ const instant = (function() {
 				path.pop();
 				path.push(blockName);
 
-				match = '<div data-instant-property="' + path.join('.') + '">' + match;
+				// match = '<div data-instant-property="' + path.join('.') + '">' + match;
 			} else if(match.indexOf('{{/') === 0) {
 				isBlock = true;
 				path.pop();
 
-				match = match + '</div>';
+				// match = match + '</div>';
 			} else {
 				match = '<div data-instant-property="' + path.join('.') + '">' + match + '</div>';
 				path.pop();
@@ -106,12 +138,16 @@ const instant = (function() {
 	 * Renders the compiled templates.
 	 */
 	var render = function() {
-		for(var i in views) {
-			var html = config.render(views[i].template, model);
+		if(!suppressRendering) {
+			for(var i in views) {
+				var html = config.render(views[i].template, model);
 
-			$(':not(script)[data-view="' + views[i].name + '"]').each(function() {
-				$(this).html(html);
-			});
+				$(':not(script)[data-view="' + views[i].name + '"]').each(function() {
+					$(this).html(html);
+				});
+			}
+		} else {
+			suppressRendering = false;
 		}
 	};
 
