@@ -3,11 +3,12 @@
  * 
  * Licence: MIT
  * Author:  Timm Albers (http://timmalbers.de)
- * Version: 1.0.1
+ * Version: 1.0.2
  */
 const instant = (function() {
 	var model = {};
 	var views = [];
+	// If true, the next call of render() will be ignored.
 	var suppressRendering = false;
 	var config = {
 		compile: function(source) {
@@ -18,14 +19,18 @@ const instant = (function() {
 		}
 	};
 
-	// Inititalize Handlebars.
+	/*
+	 *Inititalize Handlebars.
+	 */
 	(function() {
 		Handlebars.registerHelper('', function(options) {
 			alert('tejkl');
 		});
 	})();
 
-	// Initialize action listeners.
+	/*
+	 * Initialize action listeners.
+	 */
 	(function() {
 		$('body').keyup(function(e) {
 			var propertyIndex = 0;
@@ -85,6 +90,9 @@ const instant = (function() {
 		}
 	};
 
+	/*
+	 * Inserts the library specific tags into the DOM.
+	 */
 	var insertInstantTags = function(source) {
 		var path = [];
 		var blockIndex;
@@ -102,13 +110,9 @@ const instant = (function() {
 
 				path.pop();
 				path.push(blockName);
-
-				// match = '<div data-instant-property="' + path.join('.') + '">' + match;
 			} else if(match.indexOf('{{/') === 0) {
 				isBlock = true;
 				path.pop();
-
-				// match = match + '</div>';
 			} else {
 				match = '<div data-instant-property="' + path.join('.') + '">' + match + '</div>';
 				path.pop();
