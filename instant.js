@@ -1,9 +1,9 @@
-/*
+/**
  * instant.js
  * 
- * Licence: MIT
- * Author:  Timm Albers (http://timmalbers.de)
- * Version: 1.0.3
+ * @license MIT
+ * @author Timm Albers (http://timmalbers.de)
+ * @version 1.0.3
  */
 const instant = (function() {
 	var model = {};
@@ -19,7 +19,7 @@ const instant = (function() {
 		}
 	};
 
-	/*
+	/**
 	 * Inititalize Handlebars.
 	 */
 	(function() {
@@ -28,7 +28,7 @@ const instant = (function() {
 		});
 	})();
 
-	/*
+	/**
 	 * Initialize action listeners.
 	 */
 	(function() {
@@ -60,8 +60,10 @@ const instant = (function() {
 		});
 	})();
 
-	/*
+	/**
 	 * Attaches a property change listener recursivly to the given object.
+	 *
+	 * @param <Object> o
 	 */
 	var attachPropertyChangeListener = function(o) {
 		// Walk through propertys.
@@ -90,8 +92,11 @@ const instant = (function() {
 		}
 	};
 
-	/*
+	/**
 	 * Inserts the library specific tags into the DOM.
+	 *
+	 * @param <String> source
+	 * @return <String> result
 	 */
 	var insertInstantTags = function(source) {
 		var path = [];
@@ -124,7 +129,7 @@ const instant = (function() {
 		return source;
 	};
 
-	/*
+	/**
 	 * Parse the DOM, search for views and initialize those.
 	 */
 	var updateViews = function() {
@@ -138,7 +143,7 @@ const instant = (function() {
 		});
 	};
 
-	/*
+	/**
 	 * Renders the compiled templates.
 	 */
 	var render = function() {
@@ -156,8 +161,11 @@ const instant = (function() {
 	};
 
 	return {
-		/*
+		/**
 		 * Sets and initializes the model. Can ben used once; or multiple times to overwrite the set model.
+		 *
+		 * @param <Object> model
+		 * @return <Object> instant.js
 		 */
 		model: function(model_) {
 			attachPropertyChangeListener(model_);
@@ -170,8 +178,11 @@ const instant = (function() {
 			return instant;
 		},
 
-		/*
+		/**
 		 * Sets the compiler function.
+		 *
+		 * @param <Function> compiler
+		 * @return <Object> instant.js
 		 */
 		compiler: function(compiler) {
 			config.compile = compiler;
@@ -180,8 +191,11 @@ const instant = (function() {
 			return instant;
 		},
 
-		/*
+		/**
 		 * Sets the renderer function.
+		 *
+		 * @param <Function> renderer
+		 * @return <Object> instant.js
 		 */
 		renderer: function(renderer) {
 			config.render = renderer;
