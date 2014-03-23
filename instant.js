@@ -3,7 +3,7 @@
  * 
  * @license MIT
  * @author Timm Albers (http://timmalbers.de)
- * @version 1.0.3
+ * @version 1.1.0
  */
 const instant = (function() {
 	var model;
@@ -140,7 +140,6 @@ const instant = (function() {
 	 * @param template (optional)
 	 */
 	var render = function(template) {
-		console.log('r');
 		if(renderJobs.length && model) {
 			for(var i = 0; i < renderJobs.length; i++) {
 				var template = renderJobs[i].template;
