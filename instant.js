@@ -19,15 +19,6 @@ const instant = (function() {
 	};
 
 	/**
-	 * Inititalize Handlebars.
-	 */
-	(function() {
-		Handlebars.registerHelper('blank', function(context, options) {
-			return context;
-		});
-	})();
-
-	/**
 	 * Initialize action listeners.
 	 */
 	(function() {
