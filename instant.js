@@ -9,8 +9,6 @@ const instant = (function() {
 	var model;
 	var views = [];
 	var renderJobs = [];
-	// If true, the next call of render() will be ignored.
-	var suppressRendering = false;
 	var config = {
 		compile: function(source) {
 			return Handlebars.compile(source)
@@ -34,6 +32,10 @@ const instant = (function() {
 	 */
 	(function() {
 		$('body').on('input', function(e) {
+			var $focusedElement = $(':focus');
+			var focusedElementId = $focusedElement.attr('data-instant-id');
+			var caretPosition = $focusedElement.caret();
+
 			var $target = $(e.target);
 			var path = $target.attr('data-instant-attribute')
 					.split('.');
@@ -45,10 +47,8 @@ const instant = (function() {
 				if(path.length-1 == i) {
 					if(value) {
 						if(value[path[i]].hasOwnProperty('text')) {
-							suppressRendering = true;
 							value[path[i]].setProperty(newValue);
 						} else if(value[path[i]] !== newValue) {
-							suppressRendering = true;
 							value[path[i]] = newValue;
 						}
 					}
@@ -57,10 +57,6 @@ const instant = (function() {
 				}
 			}
 
-			var $focusedElement = $(':focus');
-			var focusedElementId = $focusedElement.attr('data-instant-id');
-			var caretPosition = $focusedElement.caret();
-			render();
 			$focusedElement = $('[data-instant-id=' + focusedElementId + ']');
 			$focusedElement.focus().caret(caretPosition);
 		});
@@ -79,7 +75,7 @@ const instant = (function() {
 				if(typeof o[property] === 'object') {
 					attachPropertyChangeListener(o[property]);
 				} else {
-					// Atach the listener.
+					// Attach the listener.
 					(function() {
 						var value = o[property];
 						Object.defineProperty(o, property, {
@@ -144,6 +140,7 @@ const instant = (function() {
 	 * @param template (optional)
 	 */
 	var render = function(template) {
+		console.log('r');
 		if(renderJobs.length && model) {
 			for(var i = 0; i < renderJobs.length; i++) {
 				var template = renderJobs[i].template;
@@ -169,7 +166,7 @@ const instant = (function() {
 
 				return renderJob;
 			}
-		} else if(!suppressRendering) {
+		} else {
 			for(var i in views) {
 				var html = config.render(views[i].template, model);
 
@@ -177,8 +174,6 @@ const instant = (function() {
 					$(this).html(html);
 				});
 			}
-		} else {
-			suppressRendering = false;
 		}
 	};
 
@@ -234,7 +229,7 @@ const instant = (function() {
 		 */
 		docTitle: function(title) {
 			$(document).attr('title', title);
-			
+
 			return title;
 		},
 
