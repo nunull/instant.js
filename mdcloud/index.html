@@ -8,10 +8,11 @@
 
 		<script type="text/template" data-view="main">
 			{{test}}
-			<header><span contenteditable="true">{{command}}</span></header>
-			<input type="text" value="ek">
+			<header><span contenteditable="true" data-bind-text>{{command}}</span></header>
+			<input type="text" value="{{test}}" data-bind-value>
 		</script>
 		<script type="text/javascript" src="libs/jquery.min.js"></script>
+		<script type="text/javascript" src="libs/jquery.caret.js"></script>
 		<script type="text/javascript" src="libs/handlebars.js"></script>
 		<script type="text/javascript" src="../instant.js"></script>
 		<script type="text/javascript">

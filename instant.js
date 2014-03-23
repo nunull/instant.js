@@ -34,41 +34,36 @@ const instant = (function() {
 	 */
 	(function() {
 		$('body').on('input', function(e) {
-			console.debug(e);
+			var $target = $(e.target);
+			var path = $target.attr('data-instant-attribute')
+					.split('.');
+			var newValue = $target.text() || $target.val();
+			
+			// Update model.
+			var value = model;
+			for(var i in path) {
+				if(path.length-1 == i) {
+					if(value) {
+						if(value[path[i]].hasOwnProperty('text')) {
+							suppressRendering = true;
+							value[path[i]].setProperty(newValue);
+						} else if(value[path[i]] !== newValue) {
+							suppressRendering = true;
+							value[path[i]] = newValue;
+						}
+					}
+				} else {
+					value = value[path[i]];
+				}
+			}
+
+			var $focusedElement = $(':focus');
+			var focusedElementId = $focusedElement.attr('data-instant-id');
+			var caretPosition = $focusedElement.caret();
+			render();
+			$focusedElement = $('[data-instant-id=' + focusedElementId + ']');
+			$focusedElement.focus().caret(caretPosition);
 		});
-		// TODO
-		// $('body').keyup(function(e) {
-		// 	var propertyIndex = 0;
-
-		// 	$('[data-instant-property]').each(function() {
-		// 		var propertyName = $(this).attr('data-instant-property');
-		// 		var path = propertyName.split('.');
-
-		// 		if($('[data-instant-property="' + propertyName + '"]').length > 1) {
-		// 			var tmp = path.pop();
-		// 			path.push(propertyIndex++);
-		// 			path.push(tmp);
-		// 		}
-		// 		else propertyIndex = 0;
-
-		// 		var value = model;
-		// 		for(var i in path) {
-		// 			if(path.length-1 == i) {
-		// 				if(value) {
-		// 					if(value[path[i]].hasOwnProperty('text')) {
-		// 						value[path[i]].setProperty($(this).html());
-		// 					} else if(value[path[i]] !== $(this).html()) {
-		// 						value[path[i]] = $(this).html();
-		// 					}
-		// 				}
-		// 			} else {
-		// 				value = value[path[i]];
-		// 			}
-		// 		}
-		// 	});
-
-		// 	suppressRendering = true;
-		// });
 	})();
 
 	/**
@@ -103,39 +98,26 @@ const instant = (function() {
 		}
 	};
 
-	// TODO
 	/**
 	 * Inserts the library specific tags into the DOM.
 	 *
 	 * @param <String> source
 	 * @return <String> result
 	 */
-	var insertInstantTags = function(source) {
-		var path = [];
-		var blockIndex;
+	var insertInstantAttributes = function(source) {
+		source = source.replace(/.[^<]*data-bind-.[^>]*.[^>]*>/g, function(match) {
+			var path = [];
 
-		source = source.replace(/{{.[^}}]*}}/g, function(match) {
-			var isBlock = false;
-			path.push(match.replace('{{', '').replace('}}', ''));
+			// TODO calculate parent path
 
-			if(match.indexOf('{{#') === 0) {
-				isBlock = true;
-				var parts = match.split(' ');
-				var blockName;
-				if(parts.length > 1) blockName = (parts[1]).replace('}}', '');
-				else blockName = match.replace('{{#', '').replace('}}', '');
-
-				path.pop();
-				path.push(blockName);
-			} else if(match.indexOf('{{/') === 0) {
-				isBlock = true;
-				path.pop();
-			} else {
-				match = '<div data-instant-property="' + path.join('.') + '">' + match + '</div>';
-				path.pop();
-			}
-
-			return match;
+			var attributeName = match
+					.replace(/.*\{\{/, '')
+					.replace(/\}\}.*/, '');
+			path.push(attributeName);
+			
+			return match
+					.replace(/>/, ' data-instant-attribute="' + path.join('.') + '">')
+					.replace(/>/, ' data-instant-id="' + ('' + Math.random()).replace(/0./, '') + '">');
 		});
 
 		return source;
@@ -151,8 +133,7 @@ const instant = (function() {
 			views.push({
 				name: $(this).attr('data-view'),
 				// TODO
-				// template: config.compile(insertInstantTags($(this).html()))
-				template: config.compile($(this).html())
+				template: config.compile(insertInstantAttributes($(this).html()))
 			});
 		});
 	};
@@ -163,7 +144,6 @@ const instant = (function() {
 	 * @param template (optional)
 	 */
 	var render = function(template) {
-		// console.debug('1');
 		if(renderJobs.length && model) {
 			for(var i = 0; i < renderJobs.length; i++) {
 				var template = renderJobs[i].template;
@@ -190,10 +170,8 @@ const instant = (function() {
 				return renderJob;
 			}
 		} else if(!suppressRendering) {
-			// console.debug('2');
 			for(var i in views) {
 				var html = config.render(views[i].template, model);
-				// console.debug(html);
 
 				$(':not(script)[data-view="' + views[i].name + '"]').each(function() {
 					$(this).html(html);
@@ -256,6 +234,7 @@ const instant = (function() {
 		 */
 		docTitle: function(title) {
 			$(document).attr('title', title);
+			
 			return title;
 		},
 
