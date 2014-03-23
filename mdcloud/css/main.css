@@ -1,0 +1,35 @@
+@-webkit-keyframes blink {
+  0% {
+    opacity: 0; }
+
+  50% {
+    opacity: 1; }
+
+  100% {
+    opacity: 0; } }
+
+* {
+  cursor: default;
+  margin: 0;
+  padding: 0; }
+
+span {
+  font-family: Monaco, monospace; }
+
+header {
+  position: fixed;
+  width: 1000px;
+  margin: 0 0 0 50%;
+  left: -500px; }
+  header span {
+    display: inline-block;
+    background-color: red; }
+    header span div {
+      display: inline-block; }
+    header span:after {
+      content: '|';
+      display: inline-block;
+      -webkit-animation: blink 1s infinite; }
+
+a {
+  cursor: pointer; }

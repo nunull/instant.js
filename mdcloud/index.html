@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<link rel="stylesheet" type="text/css" href="css/main.css">
+	</head>
+	<body>
+		<div data-view="main"></div>
+
+		<script type="text/template" data-view="main">
+			{{test}}
+			<header><span contenteditable="true">{{command}}</span></header>
+			<input type="text" value="ek">
+		</script>
+		<script type="text/javascript" src="libs/jquery.min.js"></script>
+		<script type="text/javascript" src="libs/handlebars.js"></script>
+		<script type="text/javascript" src="../instant.js"></script>
+		<script type="text/javascript">
+			var model = {
+				title: instant.docTitle('mdCloud'),
+				test: '',
+				command: instant.listen('', function(value) {
+					if(value.indexOf('new ') === 0) {
+						console.log(value.replace(/new /, ''));
+					}
+				})
+			};
+			instant.model(model);
+			// $(window).keypress(function(e) {
+			// 	model.test = String.fromCharCode(e.keyCode);
+			// });
+		</script>
+	</body>
+</html>

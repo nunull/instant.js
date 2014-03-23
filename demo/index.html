@@ -1,12 +1,13 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>instant.js</title>
+		<title></title>
 	</head>
 	<body>
 		<div data-view="test"></div>
 
 		<script type="text/template" data-view="test">
+			{{abc}}
 			<h1 contenteditable="true">{{title}}</h1>
 			<span><b>{{description}}</b></span>
 			<ul>
@@ -16,12 +17,18 @@
 			</ul>
 		</script>
 
+		<script type="text/template" data-view="abc">
+			tekjl
+			{{title}}
+		</script>
+
 		<script type="text/javascript" src="libs/jquery.min.js"></script>
 		<script type="text/javascript" src="libs/handlebars.js"></script>
 		<script type="text/javascript" src="../instant.js"></script>
 		<script type="text/javascript">	
 			var test = {
-				title: 'instant.js',
+				title: instant.docTitle('instant.js'),
+				abc: instant.template('abc'),
 				description: 'A client side MVC framework using handlebars.js and jQuery. Keeps your data and the DOM in sync.',
 				tags: [{
 					name: 'mvc'

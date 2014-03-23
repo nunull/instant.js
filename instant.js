@@ -6,8 +6,9 @@
  * @version 1.0.3
  */
 const instant = (function() {
-	var model = {};
+	var model;
 	var views = [];
+	var renderJobs = [];
 	// If true, the next call of render() will be ignored.
 	var suppressRendering = false;
 	var config = {
@@ -32,32 +33,42 @@ const instant = (function() {
 	 * Initialize action listeners.
 	 */
 	(function() {
-		$('body').keyup(function(e) {
-			var propertyIndex = 0;
-
-			$('[data-instant-property]').each(function() {
-				var propertyName = $(this).attr('data-instant-property');
-				var path = propertyName.split('.');
-
-				if($('[data-instant-property="' + propertyName + '"]').length > 1) {
-					var tmp = path.pop();
-					path.push(propertyIndex++);
-					path.push(tmp);
-				}
-				else propertyIndex = 0;
-
-				var value = model;
-				for(var i in path) {
-					if(path.length-1 == i) {
-						if(value[path[i]] !== $(this).html()) value[path[i]] = $(this).html();
-					} else {
-						value = value[path[i]];
-					}
-				}
-			});
-
-			suppressRendering = true;
+		$('body').on('input', function(e) {
+			console.debug(e);
 		});
+		// TODO
+		// $('body').keyup(function(e) {
+		// 	var propertyIndex = 0;
+
+		// 	$('[data-instant-property]').each(function() {
+		// 		var propertyName = $(this).attr('data-instant-property');
+		// 		var path = propertyName.split('.');
+
+		// 		if($('[data-instant-property="' + propertyName + '"]').length > 1) {
+		// 			var tmp = path.pop();
+		// 			path.push(propertyIndex++);
+		// 			path.push(tmp);
+		// 		}
+		// 		else propertyIndex = 0;
+
+		// 		var value = model;
+		// 		for(var i in path) {
+		// 			if(path.length-1 == i) {
+		// 				if(value) {
+		// 					if(value[path[i]].hasOwnProperty('text')) {
+		// 						value[path[i]].setProperty($(this).html());
+		// 					} else if(value[path[i]] !== $(this).html()) {
+		// 						value[path[i]] = $(this).html();
+		// 					}
+		// 				}
+		// 			} else {
+		// 				value = value[path[i]];
+		// 			}
+		// 		}
+		// 	});
+
+		// 	suppressRendering = true;
+		// });
 	})();
 
 	/**
@@ -92,6 +103,7 @@ const instant = (function() {
 		}
 	};
 
+	// TODO
 	/**
 	 * Inserts the library specific tags into the DOM.
 	 *
@@ -138,18 +150,50 @@ const instant = (function() {
 		$('script[type="text/template"]').each(function() {
 			views.push({
 				name: $(this).attr('data-view'),
-				template: config.compile(insertInstantTags($(this).html()))
+				// TODO
+				// template: config.compile(insertInstantTags($(this).html()))
+				template: config.compile($(this).html())
 			});
 		});
 	};
 
 	/**
 	 * Renders the compiled templates.
+	 *
+	 * @param template (optional)
 	 */
-	var render = function() {
-		if(!suppressRendering) {
+	var render = function(template) {
+		// console.debug('1');
+		if(renderJobs.length && model) {
+			for(var i = 0; i < renderJobs.length; i++) {
+				var template = renderJobs[i].template;
+
+				if(typeof template === 'function') {
+					renderJobs[i].toString = function() {
+						return config.render(template, model);
+					};
+				}
+			}
+
+			renderJobs = [];
+		}
+
+		if(template) {
+			if(model) {
+				return config.render(template, model);
+			} else {
+				var renderJob = {
+					template: template
+				};
+				renderJobs.push(renderJob);
+
+				return renderJob;
+			}
+		} else if(!suppressRendering) {
+			// console.debug('2');
 			for(var i in views) {
 				var html = config.render(views[i].template, model);
+				// console.debug(html);
 
 				$(':not(script)[data-view="' + views[i].name + '"]').each(function() {
 					$(this).html(html);
@@ -202,6 +246,71 @@ const instant = (function() {
 
 			// Return instant for method chaning.
 			return instant;
+	    },
+
+		/**
+		 * Sets the document title.
+		 *
+		 * @param <String> title
+		 * @return <String> title
+		 */
+		docTitle: function(title) {
+			$(document).attr('title', title);
+			return title;
+		},
+
+		/**
+		 * Listens for changes of the current attribute.
+		 *
+		 * @param <String> att
+		 * @param <Function> callback
+		 * @return <String> att
+		 */
+		listen: function(att, callback_) {
+			var o = {
+				text: att,
+				// TODO
+				setProperty: function(value) {
+					var result = callback_(value);
+					if(result) value = result;
+					this.text = value;
+				},
+				toString: function() {
+					return this.text;
+				}
+			};
+
+			// TODO
+			(function() {
+				var value = att;
+				var callback = callback_;
+				Object.defineProperty(o, 'text', {
+					get: function() {
+						return value;
+					},
+					set: function(value_) {
+						console.log('rkwje');
+						alert("kj");
+						// value = value_;
+						
+						// callback();
+						return value;
+					}
+				});
+			})();
+
+			return o;
+		},
+
+		// TODO
+		template: function(viewName) {
+			updateViews();
+			var template = '';
+			for(var i in views) {
+				if(views[i].name === viewName) template = views[i].template;
+			}
+
+			return render(template);
 		}
 	};
 })();
