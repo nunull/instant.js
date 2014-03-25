@@ -33,6 +33,7 @@ const instant = (function() {
 			
 			// Update model.
 			var value = model;
+			var arrayCount = 0;
 			for(var i in path) {
 				if(path.length-1 == i) {
 					if(value) {
@@ -44,16 +45,20 @@ const instant = (function() {
 					}
 				} else {
 					value = value[path[i]];
+					var containerCount = $target.parents('[data-container]').length;
 
 					if(Array.isArray(value)) {
 						var index = 0;
-						$target.parents('[data-container]').find('[data-bind-value], [data-bind-text]').each(function() {
+						
+						$target.parents('[data-container]').eq((containerCount-1)-arrayCount).find('[data-bind-value], [data-bind-text]').each(function() {
 							if($(this).is($target)) {
 								value = value[index];
-							} 
+							}
 
 							index++;
 						});
+
+						arrayCount++;
 					}
 				}
 			}
@@ -183,7 +188,7 @@ const instant = (function() {
 			}
 		} else {
 			var instantIds = {};
-			
+
 			for(var i in views) {
 				var html = config.render(views[i].template, model);
 
