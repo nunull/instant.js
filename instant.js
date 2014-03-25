@@ -106,14 +106,18 @@ const instant = (function() {
 			var path = [],
 				previous = original.substr(0, offset);
 			
-			var parentIndex = previous.search(/{{#.[^}]*}}[^{{/.*}}]/g),
-				parentBlock = previous
-						.substr(parentIndex)
-						.split('}}')[0]
-						.replace('{{#', '')
-						.split(' ');
-			parentBlock = parentBlock[parentBlock.length-1];
-			if(previous.indexOf('#') !== -1) path.push(parentBlock);
+			var oldPrevious = '';
+			while(oldPrevious !== previous) {
+				oldPrevious = previous;
+				previous = previous.replace(/{{#.[^}]*}}[^}}]*{{\/.[^{{#]*}}/g, '');
+			}
+
+			var splits = previous.split('{{#');
+			splits.shift();
+			for(var i in splits) {
+				var parts = splits[i].split('}}')[0].split(' ');
+				path.push(parts[parts.length-1]);
+			}
 
 			var attributeName = match
 					.replace(/.*\{\{/, '')
