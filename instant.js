@@ -3,7 +3,7 @@
  * 
  * @license MIT
  * @author Timm Albers (http://timmalbers.de)
- * @version 1.0.5
+ * @version 1.0.6
  */
 const instant = (function() {
 	var model;
@@ -85,6 +85,9 @@ const instant = (function() {
 							},
 							set: function(value_) {
 								value = value_;
+								
+								// Ensure that every attribute (i.e. new added array elements) has listeners attached.
+								attachPropertyChangeListener(model);
 								render();
 								return value;
 							}
