@@ -182,10 +182,27 @@ const instant = (function() {
 				return renderJob;
 			}
 		} else {
+			var instantIds = {};
+			
 			for(var i in views) {
 				var html = config.render(views[i].template, model);
 
 				$(':not(script)[data-view="' + views[i].name + '"]').each(function() {
+					html = html.replace(/data-instant-id=".[^"]*"/g, function(match) {
+						var parts = match.split('"'),
+							instantId = parts[1];
+
+						if(!instantIds[instantId]) instantIds[instantId] = 0;
+						instantIds[instantId]++;
+
+						if(instantIds[instantId] > 0) {
+							parts[1] = instantId + instantIds[instantId];
+							match = parts.join('"');
+						}
+
+						return match;
+					});
+
 					$(this).html(html);
 				});
 			}
