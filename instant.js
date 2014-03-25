@@ -84,7 +84,7 @@ const instant = (function() {
 								return value;
 							},
 							set: function(value_) {
-								value = value_
+								value = value_;
 								render();
 								return value;
 							}
