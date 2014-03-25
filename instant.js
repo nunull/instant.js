@@ -23,14 +23,13 @@ const instant = (function() {
 	 */
 	(function() {
 		$('body').on('input', function(e) {
-			var $focusedElement = $(':focus');
-			var focusedElementId = $focusedElement.attr('data-instant-id');
-			var caretPosition = $focusedElement.caret();
-
-			var $target = $(e.target);
-			var path = $target.attr('data-instant-attribute')
-					.split('.');
-			var newValue = $target.text() || $target.val();
+			var $focusedElement = $(':focus'),
+				focusedElementId = $focusedElement.attr('data-instant-id'),
+				caretPosition = $focusedElement.caret(),
+				$target = $(e.target),
+				path = $target.attr('data-instant-attribute')
+					.split('.'),
+				newValue = $target.text() || $target.val();
 			
 			// Update model.
 			var value = model;
@@ -45,6 +44,17 @@ const instant = (function() {
 					}
 				} else {
 					value = value[path[i]];
+
+					if(Array.isArray(value)) {
+						var index = 0;
+						$target.parents('[data-container]').find('[data-bind-value], [data-bind-text]').each(function() {
+							if($(this).is($target)) {
+								value = value[index];
+							} 
+
+							index++;
+						});
+					}
 				}
 			}
 
@@ -92,16 +102,24 @@ const instant = (function() {
 	 * @return <String> result
 	 */
 	var insertInstantAttributes = function(source) {
-		source = source.replace(/.[^<]*data-bind-.[^>]*.[^>]*>/g, function(match) {
-			var path = [];
-
-			// TODO calculate parent path
+		source = source.replace(/.[^<]*data-bind-.[^>]*>({{.*}})*/g, function(match, a, offset, original) {
+			var path = [],
+				previous = original.substr(0, offset);
+			
+			var parentIndex = previous.search(/{{#.[^}]*}}[^{{/.*}}]/g),
+				parentBlock = previous
+						.substr(parentIndex)
+						.split('}}')[0]
+						.replace('{{#', '')
+						.split(' ');
+			parentBlock = parentBlock[parentBlock.length-1];
+			if(previous.indexOf('#') !== -1) path.push(parentBlock);
 
 			var attributeName = match
 					.replace(/.*\{\{/, '')
 					.replace(/\}\}.*/, '');
 			path.push(attributeName);
-			
+
 			return match
 					.replace(/>/, ' data-instant-attribute="' + path.join('.') + '">')
 					.replace(/>/, ' data-instant-id="' + ('' + Math.random()).replace(/0./, '') + '">');
