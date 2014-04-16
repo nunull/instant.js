@@ -7,19 +7,9 @@
 		<div data-view="main"></div>
 
 		<script type="text/template" data-view="main">
-			{{test}}
-			<header><span contenteditable="true" data-bind-text>{{command}}</span></header>
-			<input type="text" value="{{test}}" data-bind-value>
-			<ul data-container>
-				{{#each a}}
-					<li><input type="text" value="{{t}}" data-bind-value></li>
-				{{/each}}
-			</ul>
-			<ul>
-				{{#each a}}
-					<li>{{t}}</li>
-				{{/each}}
-			</ul>
+			{{#each items}}
+				{{title}}<a class="active" data-item="{{@index}}">{{#if active}}ON{{else}}OFF{{/if}}</a><br>
+			{{/each}}
 		</script>
 		<script type="text/javascript" src="libs/jquery.min.js"></script>
 		<script type="text/javascript" src="libs/jquery.caret.js"></script>
@@ -28,20 +18,20 @@
 		<script type="text/javascript">
 			var model = {
 				title: instant.docTitle('mdCloud'),
-				test: '',
-				command: instant.listen('', function(value) {
-					if(value.indexOf('new ') === 0) {
-						console.log(value.replace(/new /, ''));
-					}
-				}),
-				a: [{
-					t: 'jrewk'
+				items: [{
+					title: 'rekj',
+					active: true
 				}, {
-					t: 'wrkejwr'
+					title: 'erjkkwjer',
+					active: false
 				}]
 			};
 			instant.model(model);
-			model.test = 'rejk';
+			$('body').click('.active', function(e) {
+				
+				var item = $(e.target).attr('data-item');
+				model.items[item].active = !model.items[item].active;
+			});
 		</script>
 	</body>
 </html>

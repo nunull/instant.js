@@ -259,6 +259,13 @@ const instant = (function() {
 	    },
 
 		/**
+		 * Called after the model has changed.
+		 */
+		change: function(callback) {
+			// TODO
+		},
+
+		/**
 		 * Sets the document title.
 		 *
 		 * @param <String> title
