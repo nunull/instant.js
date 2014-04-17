@@ -1,4 +1,4 @@
-instant.js
+![](http://timmalbers.de/instant.js/res/logo.medium.small.png)
 ==========
 
 A lightweight client side MVC framework using [handlebars.js](http://handlebarsjs.com/) and [jQuery](http://jquery.com/). Keeps your data and the DOM in sync.
