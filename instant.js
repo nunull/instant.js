@@ -3,7 +3,7 @@
  * 
  * @license MIT
  * @author Timm Albers (http://timmalbers.de)
- * @version 1.0.6
+ * @version 1.0.7
  */
 const instant = (function() {
 	var model;
@@ -54,8 +54,6 @@ const instant = (function() {
 								$children.eq(i).removeAttr(transformations[n].key);
 							}
 						}
-						console.log($children.eq(i));
-						console.log(transformations[n]);
 					}
 				} else {
 					if(oldElementTree[i - offset]) {
@@ -83,40 +81,45 @@ const instant = (function() {
 				nextDomNode = getNextNode(dom, offset);
 			}
 
+			console.log(nodes);
+
 			return nodes;
 		};
 
 		var getNextNode = function(dom, offset) {
 			if(!offset) offset = 0;
 
-			var startIndex = dom.slice(offset).search(/<[^\/]*>/);
-			if(startIndex != -1) {
-				var endIndex = dom.slice(offset + startIndex).search(/<\/[^\/]*>/) + startIndex,
-					domNodeHTML = dom.slice(offset + startIndex, offset + endIndex),
-					domNodeAttributesText = domNodeHTML.split('>')[0].replace('<', '').split(' '),
-					domNodeAttributes = [],
-					domNodeName = domNodeAttributesText[0],
-					domNodeHTMLBody = domNodeHTML.split('>')[1];
+			var slicedDOM = dom.slice(offset),
+				startIndex = slicedDOM.search(/<[^\/]*>/),
+				headerEndIndex = slicedDOM.search(/>/),
+				header = slicedDOM.slice(startIndex, headerEndIndex).replace('<', '').split(' '),
+				nodeName = header[0],
+				endIndex = slicedDOM.search('</' + nodeName + '>') + ('</' + nodeName + '>').length,
+				source = slicedDOM.slice(startIndex, endIndex),
+				attributes = [],
+				html = slicedDOM.slice(headerEndIndex + 1, endIndex - ('</' + nodeName + '>').length),
+				text = html.replace(/<.*>.*<\/[^\/]*>/, '');
 
-				for(var i = 1, j = domNodeAttributesText.length; i < j; i++) {
-					var parts = domNodeAttributesText[i].split('=');
-					
-					domNodeAttributes.push({
-						key: parts[0],
-						value: parts[1].replace(/"/g, '')
-					});
-				}
+			for(var i = 1, j = header.length; i < j; i++) {
+				var parts = header[i].split('=');
 
+				attributes.push({
+					key: parts[0],
+					value: parts[1].replace(/"/g, '')
+				});
+			}
+
+			if(startIndex !== -1) {
 				return {
 					startIndex: offset + startIndex,
 					endIndex: offset + endIndex,
-					nodeName: domNodeName,
-					attributes: domNodeAttributes,
-					html: domNodeHTMLBody,
-					source: domNodeHTML + '</' + domNodeName + '>'
+					nodeName: nodeName,
+					attributes: attributes,
+					html: html,
+					text: text,
+					source: source,
+					children: getElementTree(html)
 				};
-			} else {
-				return undefined;
 			}
 		};
 
